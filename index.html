@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบดาวน์โหลดม็อด - Mod Downloader</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sukhumvit Set', 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        /* พื้นที่โฆษณาด้านบน */
+        .ad-banner {
+            width: 100%;
+            max-width: 650px;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+
+        .ad-banner:hover {
+            transform: scale(1.01);
+        }
+
+        .ad-banner h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .ad-banner p {
+            color: #ffe6e6;
+            font-size: 0.9rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #38bdf8;
+        }
+
+        .file-info {
+            background-color: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .file-info p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        /* ขั้นตอนการปลดล็อค */
+        .step-box {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-ad {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-ad:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-tiktok {
+            background-color: #000000;
+            color: white;
+            border: 1px solid #334155;
+        }
+
+        .btn-tiktok:hover {
+            background-color: #18181b;
+        }
+
+        .btn-download {
+            background-color: #22c55e;
+            color: white;
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
+        .btn-download:hover {
+            background-color: #16a34a;
+        }
+
+        .btn:disabled {
+            background-color: #475569 !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        .badge-pending {
+            background-color: #f59e0b;
+            color: #000;
+        }
+
+        .badge-success {
+            background-color: #22c55e;
+            color: #fff;
+        }
+
+        #timer {
+            font-weight: bold;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- โฆษณาด้านบน -->
+    <div class="ad-banner" id="topAd" onclick="startAdTimer()">
+        <h3>🔥 คลิกตรงนี้เพื่อชมโฆษณาพิเศษ 🔥</h3>
+        <p>คลิกแล้วรอ 10 วินาทีเพื่อทำภารกิจปลดล็อคลิงก์ดาวน์โหลด</p>
+    </div>
+
+    <div class="container">
+        <h1>ดาวน์โหลดม็อด Free Fire</h1>
+        
+        <div class="file-info">
+            <p><strong>ชื่อไฟล์:</strong> ม็อดสกินชุดนักแข่งเซ็ตดำใส่แล้วโหดขึ้น.zip</p>
+            <p><strong>ขนาดไฟล์:</strong> 1.80 MB</p>
+            <p><strong>ประเภท:</strong> ZIP Archive</p>
+            <p><strong>สถานะลิงก์:</strong> <span id="lockStatus" style="color: #ef4444;">🔒 ล็อคอยู่</span></p>
+        </div>
+
+        <!-- ขั้นตอนที่ 1 -->
+        <div class="step-box">
+            <div class="step-title">
+                <span>1. คลิกโฆษณาด้านบน (รับชม 10 วินาที)</span>
+                <span id="badge1" class="status-badge badge-pending">ยังไม่สำเร็จ</span>
+            </div>
+            <button id="btnStep1" class="btn btn-ad" onclick="startAdTimer()">คลิกดูโฆษณาด้านบน (<span id="timerText">10 วิ</span>)</button>
+        </div>
+
+        <!-- ขั้นตอนที่ 2 -->
+        <div class="step-box">
+            <div class="step-title">
+                <span>2. ติดตาม TikTok</span>
+                <span id="badge2" class="status-badge badge-pending">ยังไม่สำเร็จ</span>
+            </div>
+            <button id="btnStep2" class="btn btn-tiktok" onclick="openTikTok()" disabled>กดติดตาม tiktok.com/@king_rooster002</button>
+        </div>
+
+        <!-- ปุ่มดาวน์โหลด (ใส่ลิงก์ MediaFire เรียบร้อย) -->
+        <a id="downloadBtn" class="btn btn-download" style="display: none;" href="https://www.mediafire.com/file/oyaola8h086igor/ม็อดสกินชุดนักแข่งเซ็ตดำใส่แล้วโหดขึ้น.zip/file" target="_blank">📥 คลิกเพื่อดาวน์โหลดไฟล์ม็อด (.ZIP)</a>
+    </div>
+
+    <script>
+        let adCompleted = false;
+        let tiktokCompleted = false;
+        let timerSeconds = 10;
+        let timerInterval = null;
+
+        // ฟังก์ชันเริ่มต้นการนับเวลาโฆษณา
+        function startAdTimer() {
+            if (adCompleted) return;
+
+            // จำลองการเปิดหน้าโฆษณา (สามารถเปลี่ยนลิงก์ Google เป็นลิงก์โฆษณาจริงได้)
+            window.open('https://google.com', '_blank');
+
+            const btn1 = document.getElementById('btnStep1');
+            btn1.disabled = true;
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                document.getElementById('timerText').innerText = `${timerSeconds} วิ`;
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    adCompleted = true;
+                    btn1.innerText = "✓ รับชมโฆษณาเรียบร้อยแล้ว";
+                    document.getElementById('badge1').innerText = "สำเร็จ";
+                    document.getElementById('badge1').className = "status-badge badge-success";
+                    
+                    // เปิดใช้งานขั้นตอนที่ 2
+                    document.getElementById('btnStep2').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // ฟังก์ชันเปิดลิงก์ TikTok
+        function openTikTok() {
+            if (!adCompleted) return;
+
+            window.open('https://www.tiktok.com/@king_rooster002', '_blank');
+
+            tiktokCompleted = true;
+            const btn2 = document.getElementById('btnStep2');
+            btn2.innerText = "✓ ไปยัง TikTok เรียบร้อยแล้ว";
+            document.getElementById('badge2').innerText = "สำเร็จ";
+            document.getElementById('badge2').className = "status-badge badge-success";
+
+            checkUnlock();
+        }
+
+        // ตรวจสอบการปลดล็อคปุ่มดาวน์โหลด
+        function checkUnlock() {
+            if (adCompleted && tiktokCompleted) {
+                document.getElementById('lockStatus').innerText = "🔓 ปลดล็อคแล้ว";
+                document.getElementById('lockStatus').style.color = "#22c55e";
+                
+                // แสดงปุ่มดาวน์โหลดไฟล์
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
+
